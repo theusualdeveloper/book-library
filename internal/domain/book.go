@@ -17,8 +17,8 @@ type Book struct {
 	UpdatedAt     time.Time
 }
 
-func NewBook(title, author, genre string, pages, year int) *Book {
-	return &Book{
+func NewBook(title, author, genre string, pages, year int) Book {
+	return Book{
 		UUID:          uuid.NewString(),
 		Title:         title,
 		Author:        author,
@@ -30,7 +30,7 @@ func NewBook(title, author, genre string, pages, year int) *Book {
 	}
 }
 
-func (b *Book) Update(title, author, genre string, pages, year int) *Book {
+func (b Book) Update(title, author, genre string, pages, year int) Book {
 	b.Title = title
 	b.Author = author
 	b.Genre = genre
