@@ -35,41 +35,37 @@ func (bs BookService) Find(uuid string) (dto.BookResponse, error) {
 }
 
 func (bs BookService) Create(req dto.CreateRequest) (dto.BookResponse, error) {
-	err := req.Validate()
-	if err != nil {
-		return dto.BookResponse{}, fmt.Errorf("create book failed: %w", err)
+	errs := req.Validate()
+	if len(errs) > 0 {
+		return dto.BookResponse{}, ValidationError{Errs: errs}
 	}
 	book := domain.NewBook(req.Title, req.Author, req.Genre, req.Pages, req.PublishedYear)
-	book, err = bs.bookRepository.Create(book)
+	book, err := bs.bookRepository.Create(book)
 	if err != nil {
-		return dto.BookResponse{}, fmt.Errorf("create book failed: %w", err)
+		return dto.BookResponse{}, err
 	}
 	return mapEntityToResponse(book), nil
 }
 
 func (bs BookService) Update(uuid string, req dto.UpdateRequest) (dto.BookResponse, error) {
-	err := req.Validate()
-	if err != nil {
-		return dto.BookResponse{}, fmt.Errorf("update book failed: %w", err)
+	errs := req.Validate()
+	if len(errs) > 0 {
+		return dto.BookResponse{}, ValidationError{Errs: errs}
 	}
 	b, err := bs.bookRepository.Find(uuid)
 	if err != nil {
-		return dto.BookResponse{}, fmt.Errorf("update book failed: %w", err)
+		return dto.BookResponse{}, err
 	}
 	b = b.Update(req.Title, req.Author, req.Genre, req.Pages, req.PublishedYear)
 	b, err = bs.bookRepository.Update(b)
 	if err != nil {
-		return dto.BookResponse{}, fmt.Errorf("update book failed: %w", err)
+		return dto.BookResponse{}, err
 	}
 	return mapEntityToResponse(b), nil
 }
 
 func (bs BookService) Delete(uuid string) error {
-	err := bs.bookRepository.Delete(uuid)
-	if err != nil {
-		return fmt.Errorf("delete book failed: %w", err)
-	}
-	return nil
+	return bs.bookRepository.Delete(uuid)
 }
 
 func mapEntitiesToResponse(books []domain.Book) []dto.BookResponse {

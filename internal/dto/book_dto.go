@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"errors"
 	"time"
 )
 
@@ -13,7 +12,7 @@ type CreateRequest struct {
 	Pages         int    `json:"pages"`
 }
 
-func (cr CreateRequest) Validate() error {
+func (cr CreateRequest) Validate() map[string][]string {
 	return validateFields(cr.Title, cr.Author, cr.Genre, cr.Pages, cr.PublishedYear)
 }
 
@@ -25,7 +24,7 @@ type UpdateRequest struct {
 	Pages         int    `json:"pages"`
 }
 
-func (ur UpdateRequest) Validate() error {
+func (ur UpdateRequest) Validate() map[string][]string {
 	return validateFields(ur.Title, ur.Author, ur.Genre, ur.Pages, ur.PublishedYear)
 }
 
@@ -40,22 +39,22 @@ type BookResponse struct {
 	UpdatedAt     time.Time `json:"updated_at"`
 }
 
-func validateFields(title, author, genre string, pages, year int) error {
-	var errs []error
+func validateFields(title, author, genre string, pages, year int) map[string][]string {
+	errs := map[string][]string{}
 	if title == "" {
-		errs = append(errs, errors.New("title is required"))
+		errs["title"] = append(errs["title"], "title is required")
 	}
 	if author == "" {
-		errs = append(errs, errors.New("author is required"))
+		errs["author"] = append(errs["author"], "author is required")
 	}
 	if year == 0 {
-		errs = append(errs, errors.New("published year is required"))
+		errs["year"] = append(errs["year"], "published year is required")
 	}
 	if genre == "" {
-		errs = append(errs, errors.New("genre is required"))
+		errs["genre"] = append(errs["genre"], "genre is required")
 	}
 	if pages == 0 {
-		errs = append(errs, errors.New("pages is required"))
+		errs["pages"] = append(errs["pages"], "pages is required")
 	}
-	return errors.Join(errs...)
+	return errs
 }
