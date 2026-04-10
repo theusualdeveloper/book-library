@@ -9,6 +9,7 @@ import (
 	"github.com/theusualdeveloper/book-library/internal/adapter"
 	"github.com/theusualdeveloper/book-library/internal/application"
 	"github.com/theusualdeveloper/book-library/internal/handler"
+	"github.com/theusualdeveloper/book-library/internal/middleware"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 	books.HandleFunc("DELETE /{id}", bookHandler.DeleteHandler)
 
 	mux := http.NewServeMux()
-	mux.Handle("/books/", http.StripPrefix("/books", books))
+	mux.Handle("/books/", middleware.Logging(middleware.Recovery(http.StripPrefix("/books", books))))
 
 	server := http.Server{
 		Addr:         ":8080",
