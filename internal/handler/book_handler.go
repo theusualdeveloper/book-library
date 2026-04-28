@@ -10,11 +10,19 @@ import (
 	"github.com/theusualdeveloper/book-library/internal/dto"
 )
 
-type BookHandler struct {
-	bookService application.BookService
+type BookService interface {
+	List() ([]dto.BookResponse, error)
+	Find(uuid string) (dto.BookResponse, error)
+	Create(req dto.CreateRequest) (dto.BookResponse, error)
+	Update(uuid string, req dto.UpdateRequest) (dto.BookResponse, error)
+	Delete(uuid string) error
 }
 
-func NewBookHandler(bs application.BookService) BookHandler {
+type BookHandler struct {
+	bookService BookService
+}
+
+func NewBookHandler(bs BookService) BookHandler {
 	return BookHandler{
 		bookService: bs,
 	}
